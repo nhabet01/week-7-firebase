@@ -83,7 +83,37 @@ database.ref("/Trains").on("child_added", function(childSnapshot, prevChildKey) 
   console.log(firstStart +", typeof firstStart: "+typeof firstStart);//1358053200 (format = "X"), typeof = string
   console.log(frequency);//3, typeof=string
   
+  //create table rows
+    // var tableBody          = document.getElementById('tableBod');
+    // var newRow             = document.createElement('tr');
+    //     newRow.setAttribute('id', 'row' + childSnapshot.key);
+    // var tdTrainName        = document.createElement('td');
+    // var tdTrainDestination = document.createElement('td');
+    // var tdTrainFrequency   = document.createElement('td');
+    // var tdTrainNextArrival = document.createElement('td');      
+    // var tdTrainAway        = document.createElement('td');
+    //-----------------------------------------------------
+    var tableBody = $("#tableBod");
+    var tableRow = $("<tr>").attr('id', 'row'+ childSnapshot.key);
+    var nameCol=$("<td>");
+    var destinationCol=$("<td>");
+    var freqCol=$("<td>");
+    var arrivalCol=$("<td>");
+    var minsAwayCol=$("<td>");
+    var delBtnCol=$("<td>");
+
+    //Create Delete button
+    var delBtn = $("<button>").text("Del");
+    delBtn.addClass("delte-button");
+    delBtnCol.append(delBtn);
   
+    //Event listener for delete button:
+    delBtn.on('click', function(){
+
+      database.ref("/Trains").child(childSnapshot.key).remove();
+    });
+
+
 
   // Calculate time until next train:
 
@@ -110,13 +140,45 @@ database.ref("/Trains").on("child_added", function(childSnapshot, prevChildKey) 
   var nextArrival = moment().add(minsAway, "minutes").format("hh:mm a");
   console.log("nextArrival: " + nextArrival);
 
+  //Add text to columns:
+  nameCol.text(trainName);
+  destinationCol.text(destination);
+  freqCol.text(frequency);
+  arrivalCol.text(nextArrival);
+  minsAwayCol.text(minsAway);
+
   // Add each train's data into the table
-  $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" +
-  frequency + "</td><td>" + nextArrival + "</td><td>" + minsAway + "</td></tr>");
+  tableRow.append(nameCol);
+  tableRow.append(destinationCol);
+  tableRow.append(freqCol);
+  tableRow.append(arrivalCol);
+  tableRow.append(minsAwayCol);
+  tableRow.append(delBtnCol);
+  tableBody.append(tableRow);
+
+
+
 
     //Call fxn here to update all of above calculations and update html every minute
 });
+  // parentNode.removeChild context borrowed from StackOverflow
+  database.ref("/Trains").on("child_removed", function(childSnapshot) {
+    var delRow = $('#row' + childSnapshot.key);
+    console.log(delRow);
 
+    delRow.parentNode.removeChild(delRow);
+    console.log("get error: Cannot read property 'removeChild' of undefined; however, row is deleted after refreshing page ");
+
+    // delRow.parent().remove(); //This removes everything
+});
+  
+
+  
+  // $(document).on("click", "button.delete", function() {
+  //   $(this).parent().remove();
+
+
+  //  });
 
 // -----------------------------------------------------------------------------
 
