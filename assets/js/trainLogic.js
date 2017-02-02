@@ -150,12 +150,13 @@
       //Call fxn here to update all of above calculations and update html every minute
       function updateTime(){
         minsAway--;
-        minsAwayCol.text(minsAway);
+        minsAwayCol.textContent=minsAway;
         if(minsAway <=0){
             minsAway = frequency;
-            nextArrival = moment(nextArrival).add(frequency,'minutes').toISOString;
+            nextArrival = moment().add(frequency,'minutes').toISOString;
+            console.log(nextArrival);
             // used .toISOString above and converting to format("hh:mm a") due to deprecating warning...even though had no issues above before adding the update every minute...not sure why
-            arrivalCol.text(nextArrival).format('hh:mm a');
+            arrivalCol.textContent = moment(nextArrival).format('hh:mm a');
 
         }
       }
